@@ -18,13 +18,13 @@ export default function Forecast({ route }) {
   const [forecast, setForecast] = useState([]);
   const [currentWeather, setCurrentWeather] = useState(null);
   const [hourlyTemps, setHourlyTemps] = useState([]);
-  const { location } = route.params;
+  const { locationData } = route.params;
 
   async function getCredentiels() {
-    console.log("location: " + location.description);
+    console.log("location: " + locationData.description);
     try {
       const placeDetailsRes = await axios.get(
-        `https://maps.googleapis.com/maps/api/place/details/json?placeid=${location.placeId}&key=${API_KEY_AUTOCOMPLETE_PLACE}`
+        `https://maps.googleapis.com/maps/api/place/details/json?placeid=${locationData.placeId}&key=${API_KEY_AUTOCOMPLETE_PLACE}`
       );
 
       const result = placeDetailsRes.data.result;
@@ -39,7 +39,7 @@ export default function Forecast({ route }) {
       console.log("State: ", state?.short_name);
 
       const geoCoordinates = await axios.get(
-        `http://api.openweathermap.org/geo/1.0/direct?q=${location.description},${state.short_name},${country.short_name}&appid=${API_KEY_WEATHER}`
+        `http://api.openweathermap.org/geo/1.0/direct?q=${locationData.description},${state.short_name},${country.short_name}&appid=${API_KEY_WEATHER}`
       );
 
       return {
@@ -141,7 +141,7 @@ export default function Forecast({ route }) {
         {currentWeather && (
           <View style={styles.currentWeatherContainer}>
             <Text style={styles.currentWeatherTitle}>
-              {location.description}
+              {locationData.description}
             </Text>
             <Text style={styles.currentWeatherValue}>{currentWeather} °C</Text>
           </View>

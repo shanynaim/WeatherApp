@@ -3,6 +3,7 @@ import {
   StyleSheet,
   TextInput,
   View,
+  Text,
   Button,
   FlatList,
   Dimensions,
@@ -17,6 +18,7 @@ export default function SearchPlace({ navigation }) {
   const [location, setLocation] = useState({});
   const [predictions, setPredictions] = useState([]);
   const [showPredictions, setShowPredictions] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     async function autoCompletePlace() {
@@ -77,8 +79,18 @@ export default function SearchPlace({ navigation }) {
       </View>
       <Button
         title="Search"
-        onPress={() => navigation.navigate("Forecast", { location })}
+        onPress={() => {
+          if (typeof location === "object") {
+            setErrorMessage(null);
+            let locationData = location;
+            setLocation({});
+            navigation.navigate("Forecast", { locationData });
+          } else {
+            setErrorMessage("Error in city name");
+          }
+        }}
       />
+      {errorMessage && <Text style={styles.errorMessage}>{errorMessage}</Text>}
       <StatusBar style="auto" />
     </View>
   );
@@ -114,5 +126,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ddd",
     width: width * 0.6, // 60% of screen width
+  },
+
+  errorMessage: {
+    color: "red", // or any other desired color
+    fontSize: 16,
+    marginTop: 10, // adjust the margin as needed
   },
 });
