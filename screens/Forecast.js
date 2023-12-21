@@ -19,6 +19,7 @@ export default function Forecast({ route }) {
   const [currentWeather, setCurrentWeather] = useState(null);
   const [hourlyTemps, setHourlyTemps] = useState([]);
   const { locationData } = route.params;
+  const [errorMessage, setErrorMessage] = useState(null);
 
   async function getCredentiels() {
     console.log("location: " + locationData.description);
@@ -48,6 +49,7 @@ export default function Forecast({ route }) {
       };
     } catch (error) {
       console.log("error in credentiels: " + error);
+      setErrorMessage("Error in city data");
     }
   }
 
@@ -100,11 +102,11 @@ export default function Forecast({ route }) {
 
   useEffect(() => {
     async function getWeather() {
-      const { longitude, latitude } = await getCredentiels();
-
-      console.log("latitude: " + latitude + ", longitude: " + longitude);
-
       try {
+        const { longitude, latitude } = await getCredentiels();
+
+        console.log("latitude: " + latitude + ", longitude: " + longitude);
+
         const forecastVal = await axios.get(
           `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&appid=${API_KEY_WEATHER}&units=metric`
         );
@@ -118,6 +120,7 @@ export default function Forecast({ route }) {
         setCurrentWeather(weatherVal?.data?.main?.temp);
       } catch (error) {
         console.log(`error fetching weather forecast: ` + error);
+        setErrorMessage("Error in city data");
       }
     }
     getWeather();
@@ -175,6 +178,7 @@ export default function Forecast({ route }) {
             />
           </View>
         )}
+        {errorMessage && <Text>{errorMessage}</Text>}
       </View>
     </ImageBackground>
   );
